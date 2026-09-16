@@ -179,7 +179,7 @@ func (s *Store) searchVector(ctx context.Context, query string, limit int) ([]Se
 WITH knn AS (
   SELECT rowid,distance
   FROM chunk_vec
-  WHERE embedding MATCH ? AND k = ?
+  WHERE embedding MATCH vec_int8(?) AND k = ?
 )
 SELECT c.id,c.document_id,c.content,knn.distance
 FROM knn JOIN chunks c ON c.id=knn.rowid
