@@ -140,7 +140,7 @@ LIMIT 1`, EmbeddingPending, EmbeddingRetry, unixNow()).Scan(&id, &content, &atte
 				return false, txErr
 			}
 			defer tx.Rollback()
-			if _, txErr = tx.ExecContext(ctx, "INSERT OR REPLACE INTO chunk_vec(rowid,embedding) VALUES(?,?)", id, q); txErr == nil {
+			if _, txErr = tx.ExecContext(ctx, "INSERT OR REPLACE INTO chunk_vec(rowid,embedding) VALUES(?,vec_int8(?))", id, q); txErr == nil {
 				_, txErr = tx.ExecContext(ctx, "UPDATE chunks SET embedding_state=?,updated_at=? WHERE id=?", EmbeddingIndexed, unixNow(), id)
 			}
 			if txErr != nil {
