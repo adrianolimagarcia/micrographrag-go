@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+      - name: Dependencies
+        run: go mod download
+      - name: Module hygiene
+        run: go mod tidy && git diff --exit-code -- go.mod go.sum
+      - name: Format
+        run: test -z "$(gofmt -l .)"
+      - name: Vet
+        run: go vet -tags sqlite_fts5 ./...
+      - name: Tests
+        env:
+          CGO_ENABLED: '1'
+        run: go test -v -tags sqlite_fts5 ./...
+      - name: Build
+        env:
+          CGO_ENABLED: '1'
+        run: go build -tags sqlite_fts5 ./...
